@@ -1,0 +1,23 @@
+#!/usr/bin/python
+#-*- coding: utf-8 -*-
+
+import argparse
+import os
+import sys
+from hipflask import setup
+
+def argparser():
+    parser = argparse.ArgumentParser(description="Hipflask helps you with your Flask.")
+    parser.add_argument('init', nargs='?', metavar='init',
+                        help="Create a new Flask web application")
+    parser.add_argument('--name', dest='name', default="app.py",
+                        help='Specify a name')
+    return parser
+
+if __name__ == "__main__":
+    parser = argparser()
+    args = parser.parse_args()
+
+    if not args.init:        
+        sys.exit(parser.print_help())
+    setup(os.getcwd(), appname=args.name)
