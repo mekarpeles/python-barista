@@ -4,8 +4,8 @@ Barista
 
 Barista helps you manage the Flask
 """
-from setuptools import setup
 
+from distutils.core import setup
 
 setup(
     name='Barista',

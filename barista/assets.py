@@ -74,7 +74,7 @@ debug = 1
 """
 
 app = """from flask import Flask
-from flask.ext.routing import route
+from flask.ext.routing import router
 import views
 from configs import options
 
@@ -82,7 +82,7 @@ urls = ('/partials/<path:partial>', views.Partial,
         '/<path:uri>', views.Base,
         '/', views.Base
         )
-app = route(Flask(__name__), urls)
+app = router(Flask(__name__), urls)
 
 if __name__ == "__main__":
     app.run(**options)
