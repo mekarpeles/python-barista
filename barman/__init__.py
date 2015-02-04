@@ -4,7 +4,7 @@
 """
     __init__
     ~~~~~~~~
-    Setup flapper app with
+    Have Barman setup Flask app
 
     :copyright: (c) 2015 by Mek
     :license: BSD, see LICENSE for more details.
@@ -47,26 +47,22 @@ def setup(path, appname="app.py", version="0.0.1", python='3.4', **kwargs):
             },
         }
 
-    def buildfs(fs, path=""):
-        def buildfile(asset, path):
-            if asset and not os.path.exists(path):
-                if f.endswith(".py"):
-                    asset = assets.header(f, python=python) + asset
-                with open(path, 'w') as fout:
-                    fout.write(asset)
 
-        if type(fs) is not dict:
-            buildfile(fs, path)
-        else:
+    def buildfs(fs, path="", **kwargs):
+        if type(fs) is dict:
             for f in fs:
                 cwd = "%s%s%s" % (path, os.sep, f)
-                # if f is a directory
                 if type(fs[f]) is dict:
                     if not os.path.exists(cwd):
                         os.makedirs(cwd)
-                    if fs[f]: # non empty dir
-                        buildfs(fs[f], path=cwd)
+                    buildfs(fs[f], path=cwd, **kwargs)
                 else:
-                    buildfile(fs[f], path=cwd)
+                    asset = fs[f]
+                    if asset and not os.path.exists(cwd):
+                        if f.endswith(".py"):
+                            py = kwargs.get('python')
+                            asset = assets.header(f, python=py) + asset
+                            with open(cwd, 'w') as fout:
+                                fout.write(asset)
+    buildfs(fs, path=path, **kwargs)
 
-    buildfs(fs, path=path)

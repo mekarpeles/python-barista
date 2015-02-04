@@ -74,12 +74,13 @@ debug = 1
 """
 
 app = """from flask import Flask
-from flask_router import route
+from flask.ext.routing import route
+import views
 from configs import options
 
-urls = ('/partials/<path:partial>', Partials,
-        '/<path:uri>', Base,
-        '/', Base
+urls = ('/partials/<path:partial>', views.Partial,
+        '/<path:uri>', views.Base,
+        '/', views.Base
         )
 app = route(Flask(__name__), urls)
 
@@ -88,7 +89,7 @@ if __name__ == "__main__":
 
 """
 
-views = """from flask import render_template,
+views = """from flask import render_template
 from flask.views import MethodView
 
 class Base(MethodView):
@@ -102,7 +103,7 @@ class Partial(MethodView):
 """
 
 def base(title, static):
-    base = """
+    return """
 <!doctype html>
 <html class="no-js" lang="">
     <head>
@@ -111,8 +112,8 @@ def base(title, static):
         <title>%s</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script type="text/javascript" src="/%s/build/js/app.js">
-        <link rel="stylesheet" type="text/css" href="/%s/build/css/style.css"
+        <script type="text/javascript" src="/%s/build/js/app.js"></script>
+        <link rel="stylesheet" type="text/css" href="/%s/build/css/style.css"/>
     </head>
     <body>
         <!--[if lt IE 8]>

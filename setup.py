@@ -1,33 +1,33 @@
 """
-Hipflask
+Barman
 --------
 
-Alternative routing for Flask
+Barman helps you with your Flask
 """
 from setuptools import setup
 
 
 setup(
-    name='Hipflask',
+    name='Barman',
     version='0.0.1',
     url='',
     license='BSD',
     author='Mek Karpeles',
     author_email='michael.karpeles@gmail.com',
-    description='A Flask application launcher',
+    description='A Flask application creator',
     long_description=__doc__,
     packages=[
-        'hipflask'
+        'barman'
         ],
     zip_safe=False,
     include_package_data=True,
     platforms='any',
     install_requires=[
         'Flask',
-        'flask_router'
+        'Flask-Routing'
     ],
     scripts=[
-        "scripts/hipflask"
+        "scripts/barman"
         ],
     classifiers=[
         'Environment :: Web Environment',
