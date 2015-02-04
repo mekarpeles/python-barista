@@ -4,7 +4,7 @@
 """
     __init__
     ~~~~~~~~
-    Have Barman setup Flask app
+    Barista helps you manage the Flask
 
     :copyright: (c) 2015 by Mek
     :license: BSD, see LICENSE for more details.

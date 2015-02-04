@@ -1,14 +1,14 @@
 """
-Barman
---------
+Barista
+-------
 
-Barman helps you with your Flask
+Barista helps you manage the Flask
 """
 from setuptools import setup
 
 
 setup(
-    name='Barman',
+    name='Barista',
     version='0.0.1',
     url='',
     license='BSD',
@@ -17,7 +17,7 @@ setup(
     description='A Flask application creator',
     long_description=__doc__,
     packages=[
-        'barman'
+        'barista'
         ],
     zip_safe=False,
     include_package_data=True,
@@ -27,9 +27,10 @@ setup(
         'Flask-Routing'
     ],
     scripts=[
-        "scripts/barman"
+        "scripts/barista"
         ],
     classifiers=[
+        'Development Status :: 2 - Pre-Alpha',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
