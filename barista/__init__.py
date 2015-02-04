@@ -46,23 +46,25 @@ def setup(path, appname="app.py", version="0.0.1", python='3.4', **kwargs):
             '__init__.py': assets.empty
             },
         }
-
-
-    def buildfs(fs, path="", **kwargs):
-        if type(fs) is dict:
-            for f in fs:
-                cwd = "%s%s%s" % (path, os.sep, f)
-                if type(fs[f]) is dict:
-                    if not os.path.exists(cwd):
-                        os.makedirs(cwd)
-                    buildfs(fs[f], path=cwd, **kwargs)
-                else:
-                    asset = fs[f]
-                    if asset and not os.path.exists(cwd):
-                        if f.endswith(".py"):
-                            py = kwargs.get('python')
-                            asset = assets.header(f, python=py) + asset
-                            with open(cwd, 'w') as fout:
-                                fout.write(asset)
     buildfs(fs, path=path, **kwargs)
 
+def buildfs(fs, path="", **kwargs):
+    if type(fs) is not dict:
+        return create_asset(fs, path, **kwargs)
+    for f in fs:
+        cwd = "%s%s%s" % (path, os.sep, f)
+        if type(fs[f]) is dict:
+            if not os.path.exists(cwd):
+                os.makedirs(cwd)
+            buildfs(fs[f], path=cwd, **kwargs)
+        else:
+            create_asset(fs[f], cwd)
+
+def create_asset(asset, path, **kwargs):
+    if asset and not os.path.exists(path):
+        fname = path.rsplit(os.sep, 1)[-1]
+        if fname.endswith(".py"):
+            python = kwargs.get('python')
+            asset = assets.header(fname, python=python) + asset
+        with open(path, 'w') as fout:
+            fout.write(asset)

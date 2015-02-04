@@ -1,13 +1,14 @@
 #!/usr/bin/env python3.4
 #-*-coding: utf-8 -*-
 
+import json
 import datetime
 
 empty = ""
 
 def package(name, version, **kwargs):
     """For package.json"""
-    return {
+    return json.dumps({
         "name": name,
         "version": kwargs.get('version', ''),
         "description": kwargs.get('desc', ''),
@@ -23,7 +24,7 @@ def package(name, version, **kwargs):
         "license": kwargs.get('license', ''),
         "devDependencies": {
             }
-        }
+        })
 
 def header(name, desc="", year="", author="Anonymous", license="BSD", python='3.4'):
     """Header for .py files"""
