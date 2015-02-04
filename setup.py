@@ -9,7 +9,7 @@ from distutils.core import setup
 
 setup(
     name='Barista',
-    version='0.0.1',
+    version='0.0.2',
     url='',
     license='BSD',
     author='Mek Karpeles',
