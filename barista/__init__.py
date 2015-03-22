@@ -20,7 +20,12 @@ def setup(path, appname="app", version="0.0.1", python='3.4', **kwargs):
         static: {
             'package.json': assets.package(appname, version),
             'Gulpfile.js': "",
-            'gulp': {},
+            'gulp': {
+                'tasks': assets.gulp_tasks(appname),
+                'util': assets.gulp_util(appname),
+                'config.js': assets.gulp_config,
+                'index.js': assets.gulp_index
+            },
             'test': {},
             'app': {
                 kwargs.pop('templates', 'views'): {

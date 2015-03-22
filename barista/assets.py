@@ -141,6 +141,482 @@ def base(title, static):
 </html>
 """ % (title, static, static)
 
+gulp_config = """'use strict';
+
+module.exports = {
+
+  'serverport': 3000,
+
+  'styles': {
+    'src' : 'app/styles/**/*.scss',
+    'dest': 'build/css'
+  },
+
+  'scripts': {
+    'src' : 'app/scripts/**/*.js',
+    'dest': 'build/js'
+  },
+
+  'images': {
+    'src' : 'app/images/**/*',
+    'dest': 'build/images'
+  },
+
+  'fonts': {
+    'src' : 'app/fonts/*',
+    'dest': 'build/fonts'
+  },
+
+  'views': {
+    'watch': [
+      'app/index.html',
+      'app/views/**/*.html',
+      'app/**/views/*.html'
+    ],
+    'src': 'app/views/**/*.html',
+    'dest': 'app/scripts'
+  },
+
+  'dist': {
+    'root'  : 'build'
+  },
+
+  'browserify': {
+    'entries'   : ['./app/scripts/app.js'],
+    'bundleName': 'app.js'
+  },
+
+  'test': {
+    'karma': 'test/karma.conf.js',
+    'protractor': 'test/protractor.conf.js'
+  }
+
+};
+"""
+
+gulp_index = """'use strict';
+
+var fs = require('fs');
+var onlyScripts = require('./util/scriptFilter');
+var tasks = fs.readdirSync('./gulp/tasks/').filter(onlyScripts);
+
+tasks.forEach(function(task) {
+  require('./tasks/' + task);
+});
+"""
+    
+def gulp_tasks(appname):
+    return {
+        'browserSync.js': """'use strict';
+
+var config      = require('../config');
+var browserSync = require('browser-sync');
+var gulp        = require('gulp');
+
+    gulp.task('browserSync', function() {
+
+  browserSync({
+    proxy: 'localhost:' + config.serverport
+  });
+
+});    
+""",
+    'browserify.js': """
+'use strict';
+
+var config       = require('../config');
+var gulp         = require('gulp');
+var gulpif       = require('gulp-if');
+var gutil        = require('gulp-util');
+var source       = require('vinyl-source-stream');
+var streamify    = require('gulp-streamify');
+var watchify     = require('watchify');
+var browserify   = require('browserify');
+var uglify       = require('gulp-uglify');
+var handleErrors = require('../util/handleErrors');
+var browserSync  = require('browser-sync');
+var ngAnnotate   = require('browserify-ngannotate');
+
+// Based on: http://blog.avisi.nl/2014/04/25/how-to-keep-a-fast-build-with-browserify-and-reactjs/
+function buildScript(file) {
+
+  var bundler = browserify({
+    entries: config.browserify.entries,
+    cache: {},
+    packageCache: {},
+    fullPaths: true
+    }, watchify.args);
+
+  if ( !global.isProd ) {
+    bundler = watchify(bundler);
+    bundler.on('update', function() {
+      rebundle();
+    });
+  }
+
+  bundler.transform(ngAnnotate);
+  bundler.transform('brfs');
+
+  function rebundle() {
+    var stream = bundler.bundle();
+
+    gutil.log('Rebundle...');
+
+    return stream.on('error', handleErrors)
+      .pipe(source(file))
+      .pipe(gulpif(global.isProd, streamify(uglify())))
+      .pipe(gulp.dest(config.scripts.dest))
+      .pipe(browserSync.reload({ stream: true, once: true }));
+  }
+
+  return rebundle();
+
+}
+
+    gulp.task('browserify', function() {
+
+    return buildScript('%(appname)s');
+
+});
+"""%{'appname': appname},
+    'clean.js': """'use strict';
+
+var config = require('../config');
+var gulp   = require('gulp');
+var del    = require('del');
+
+    gulp.task('clean', function(cb) {
+
+    del([config.dist.root], cb);
+
+});
+""",
+    'deploy.js': """'use strict';
+
+var gulp = require('gulp');
+
+    gulp.task('deploy', function() {
+
+  // Any deployment logic should go here
+
+});
+""",
+    'development.js': """'use strict';
+
+var gulp        = require('gulp');
+var runSequence = require('run-sequence');
+
+    gulp.task('dev', ['clean'], function(cb) {
+
+  cb = cb || function() {};
+
+  global.isProd = false;
+
+    runSequence('styles', 'images', 'fonts', 'views', 'browserify', 'watch', cb);
+
+});
+""",
+    'fonts.js': """'use strict';
+
+var config     = require('../config');
+var changed    = require('gulp-changed');
+var gulp       = require('gulp');
+var gulpif     = require('gulp-if');
+
+    gulp.task('fonts', function() {
+
+  var dest = config.fonts.dest;
+
+  return gulp.src(config.fonts.src)
+    .pipe(changed(dest)) // Ignore unchanged files
+    .pipe(gulp.dest(dest));
+
+});
+""",
+    'images.js': """'use strict';
+
+var config     = require('../config');
+var changed    = require('gulp-changed');
+var gulp       = require('gulp');
+var gulpif     = require('gulp-if');
+var imagemin   = require('gulp-imagemin');
+
+    gulp.task('images', function() {
+
+  var dest = config.images.dest;
+
+  return gulp.src(config.images.src)
+    .pipe(changed(dest)) // Ignore unchanged files
+    .pipe(gulpif(global.isProd, imagemin()))    // Optimize
+    .pipe(gulp.dest(dest));
+
+});
+""",
+    'lint.js': """'use strict';
+
+var config = require('../config');
+var gulp   = require('gulp');
+var jshint = require('gulp-jshint');
+
+    gulp.task('lint', function() {
+    return gulp.src([config.scripts.src, '!app/js/templates.js'])
+    .pipe(jshint())
+    .pipe(jshint.reporter('jshint-stylish'));
+});
+""",
+    'production.js': """'use strict';
+
+var gulp        = require('gulp');
+var runSequence = require('run-sequence');
+
+    gulp.task('prod', ['clean'], function(cb) {
+
+  cb = cb || function() {};
+
+  global.isProd = true;
+
+    runSequence('styles', 'images', 'views', 'browserify', cb);
+
+});
+""",
+    'protractor.js': """'use strict';
+
+var gulp            = require('gulp');
+var protractor      = require('gulp-protractor').protractor;
+var webdriver       = require('gulp-protractor').webdriver;
+var webdriverUpdate = require('gulp-protractor').webdriver_update;
+var config          = require('../config');
+
+    gulp.task('webdriver-update', webdriverUpdate);
+    gulp.task('webdriver', webdriver);
+
+    gulp.task('protractor', ['webdriver-update', 'webdriver', 'server'], function() {
+
+  return gulp.src('test/e2e/**/*.js')
+    .pipe(protractor({
+        configFile: config.test.protractor,
+    }))
+    .on('error', function(err) {
+      // Make sure failed tests cause gulp to exit non-zero
+      throw err;
+    });
+
+});
+""",
+    'reload.js': """'use strict';
+
+var gulp        = require('gulp');
+var browserSync = require('browser-sync');
+
+    gulp.task('reload', function() {
+
+  browserSync.reload();
+
+});
+""",
+    'server.js': """'use strict';
+
+var config  = require('../config');
+var http    = require('http');
+var express = require('express');
+var gulp    = require('gulp');
+var gutil   = require('gulp-util');
+var morgan  = require('morgan');
+
+    gulp.task('server', function() {
+
+  var server = express();
+
+  // log all requests to the console
+  server.use(morgan('dev'));
+  server.use(express.static(config.dist.root));
+
+  // Serve index.html for all routes to leave routing up to Angular
+    server.all('/*', function(req, res) {
+      res.sendFile('index.html', { root: 'build' });
+  });
+
+  // Start webserver if not already running
+  var s = http.createServer(server);
+    s.on('error', function(err){
+    if(err.code === 'EADDRINUSE'){
+      gutil.log('Development server is already started at port ' + config.serverport);
+    }
+    else {
+      throw err;
+    }
+  });
+
+  s.listen(config.serverport);
+
+});
+""",
+    'styles.js': """'use strict';
+
+var config       = require('../config');
+var gulp         = require('gulp');
+var sass         = require('gulp-sass');
+var gulpif       = require('gulp-if');
+var handleErrors = require('../util/handleErrors');
+var browserSync  = require('browser-sync');
+var autoprefixer = require('gulp-autoprefixer');
+
+    gulp.task('styles', function () {
+
+  return gulp.src(config.styles.src)
+    .pipe(sass({
+      sourceComments: global.isProd ? 'none' : 'map',
+      sourceMap: 'sass',
+      outputStyle: global.isProd ? 'compressed' : 'nested'
+    }))
+    .pipe(autoprefixer("last 2 versions", "> 1%", "ie 8"))
+    .on('error', handleErrors)
+    .pipe(gulp.dest(config.styles.dest))
+    .pipe(gulpif(browserSync.active, browserSync.reload({ stream: true })));
+
+});
+""",
+    'test.js': """'use strict';
+
+var gulp        = require('gulp');
+var runSequence = require('run-sequence');
+
+    gulp.task('test', ['server'], function() {
+
+    runSequence('unit', 'protractor');
+
+});
+""",
+    'unit.js': """'use strict';
+
+var gulp   = require('gulp');
+var karma  = require('gulp-karma');
+var config = require('../config');
+
+    gulp.task('unit', function() {
+
+    // Nonsensical source to fall back to files listed in karma.conf.js,
+  // see https://github.com/lazd/gulp-karma/issues/9
+  return gulp.src('./thisdoesntexist')
+    .pipe(karma({
+      configFile: config.test.karma,
+      action: 'run'
+    }))
+    .on('error', function(err) {
+      // Make sure failed tests cause gulp to exit non-zero
+      throw err;
+    });
+
+});
+""",
+    'views.js': """'use strict';
+
+var config         = require('../config');
+var gulp           = require('gulp');
+var templateCache  = require('gulp-angular-templatecache');
+
+// Views task
+    gulp.task('views', function() {
+
+  // Put our index.html in the dist folder
+  gulp.src('app/index.html')
+    .pipe(gulp.dest(config.dist.root));
+
+  // Process any other view files from app/views
+  return gulp.src(config.views.src)
+    .pipe(templateCache({
+      standalone: true
+    }))
+    .pipe(gulp.dest(config.views.dest));
+
+});
+""",
+    'watch.js': """'use strict';
+
+var config        = require('../config');
+var gulp          = require('gulp');
+
+    gulp.task('watch', ['browserSync', 'server'], function() {
+
+    gulp.watch(config.scripts.src, ['lint', 'browserify']);
+    gulp.watch(config.styles.src,  ['styles']);
+    gulp.watch(config.images.src,  ['images', 'reload']);
+    gulp.watch(config.views.watch, ['views']);
+
+});
+"""
+}
+
+def gulp_util(appname):
+    return {
+        'bundleLogger.js': """'use strict';
+
+/* bundleLogger
+ * ------------
+ * Provides gulp style logs to the bundle method in browserify.js
+ */
+
+var gutil        = require('gulp-util');
+var prettyHrtime = require('pretty-hrtime');
+var startTime;
+
+module.exports = {
+
+  start: function() {
+    startTime = process.hrtime();
+        gutil.log('Running', gutil.colors.green('\'bundle\'') + '...');
+        },
+
+  end: function() {
+    var taskTime = process.hrtime(startTime);
+    var prettyTime = prettyHrtime(taskTime);
+        gutil.log('Finished', gutil.colors.green('\'bundle\''), 'in', gutil.colors.magenta(prettyTime));
+  }
+
+};
+""",
+        'handleErrors.js': """'use strict';
+
+var notify = require('gulp-notify');
+
+module.exports = function(error) {
+
+  if( !global.isProd ) {
+
+    var args = Array.prototype.slice.call(arguments);
+
+    // Send error to notification center with gulp-notify
+    notify.onError({
+        title: 'Compile Error',
+      message: '<%= error.message %>'
+        }).apply(this, args);
+
+    // Keep gulp from hanging on this task
+    this.emit('end');
+
+  } else {
+    // Log the error and stop the process
+    // to prevent broken code from building
+    console.log(error);
+    process.exit(1);
+  }
+
+};
+""",
+        'scriptFilter.js': """'use strict';
+
+var path = require('path');
+
+// Filters out non .js files. Prevents
+// accidental inclusion of possible hidden files
+module.exports = function(name) {
+
+  return /(\.(js)$)/i.test(path.extname(name));
+
+};
+"""
+}
+
 class Angular(object):
 
     @staticmethod
