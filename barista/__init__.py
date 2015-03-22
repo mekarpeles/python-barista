@@ -26,7 +26,16 @@ def setup(path, appname="app", version="0.0.1", python='3.4', **kwargs):
                 'config.js': assets.gulp_config,
                 'index.js': assets.gulp_index
             },
-            'test': {},
+            'test': {
+                'e2e': assets.test_e2e,
+                'unit': {
+                    'controllers': assets.test_unit_controllers,
+                    'services': assets.test_unit_services,
+                    'settings_spec.js': assets.test_unit_settings_spec
+                },
+                'karma.conf.js': assets.test_karma,
+                'protractor.conf.js': assets.test_protractor
+            },
             'app': {
                 kwargs.pop('templates', 'views'): {
                     'base.html': assets.base(appname, static),

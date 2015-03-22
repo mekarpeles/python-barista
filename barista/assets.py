@@ -617,6 +617,213 @@ module.exports = function(name) {
 """
 }
 
+def test_e2e:
+    return {
+        'example_spec.js': """/*global browser, by */
+
+'use strict';
+
+        describe('E2E: Example', function() {
+
+  beforeEach(function() {
+    browser.get('/');
+    browser.waitForAngular();
+  });
+
+        it('should route correctly', function() {
+    expect(browser.getLocationAbsUrl()).toMatch('/');
+  });
+
+        it('should show the number defined in the controller', function() {
+    var element = browser.findElement(by.css('.number-example'));
+    expect(element.getText()).toEqual('1234');
+  });
+
+});
+""",
+        'routes_spec.js': """/*global browser */
+
+'use strict';
+
+        describe('E2E: Routes', function() {
+
+        it('should have a working home route', function() {
+    browser.get('#/');
+    expect(browser.getLocationAbsUrl()).toMatch('/');
+  });
+
+});
+"""
+}
+
+def test_unit_controllers:
+    return {
+        'example_spec.js': """/*global angular */
+
+'use strict';
+
+        describe('Unit: ExampleCtrl', function() {
+
+  var ctrl;
+
+  beforeEach(function() {
+    // instantiate the app module
+    angular.mock.module('app');
+
+    // mock the controller
+    angular.mock.inject(function($controller) {
+      ctrl = $controller('ExampleCtrl');
+    });
+  });
+
+        it('should exist', function() {
+    expect(ctrl).toBeDefined();
+  });
+
+        it('should have a number variable equal to 1234', function() {
+    expect(ctrl.number).toEqual(1234);
+  });
+
+        it('should have a title variable equal to \'AngularJS, Gulp, and Browserify!\'', function() {
+        expect(ctrl.title).toEqual('AngularJS, Gulp, and Browserify!');
+  });
+
+});
+"""
+}
+
+def test_unit_services:
+    return {
+        'example_spec.js': """/*global angular */
+
+'use strict';
+
+        describe('Unit: ExampleService', function() {
+
+  var service;
+
+  beforeEach(function() {
+    // instantiate the app module
+    angular.mock.module('app');
+
+    // mock the service
+    angular.mock.inject(function(ExampleService) {
+      service = ExampleService;
+    });
+  });
+
+        it('should exist', function() {
+    expect(service).toBeDefined();
+  });
+
+});
+"""
+}
+
+test_unit_settings_spec = """/*global angular */
+
+'use strict';
+
+describe('Unit: Settings', function() {
+
+  var settings;
+
+  beforeEach(function() {
+    // instantiate the app module
+    angular.mock.module('app');
+
+    // mock the directive
+    angular.mock.inject(function(AppSettings) {
+      settings = AppSettings;
+    });
+  });
+
+  it('should exist', function() {
+    expect(settings).toBeDefined();
+  });
+
+  it('should have an application name', function() {
+    expect(settings.appTitle).toEqual('Example Application');
+  });
+
+});
+"""
+
+test_karma = """'use strict';
+
+module.exports = function(config) {
+
+  config.set({
+
+    basePath: '../',
+    frameworks: ['jasmine', 'browserify'],
+    preprocessors: {
+      'app/scripts/**/*.js': ['browserify']
+    },
+    browsers: ['Chrome'],
+    reporters: ['progress'],
+
+    autoWatch: true,
+
+    plugins: [
+      'karma-jasmine',
+      'karma-bro',
+      'karma-chrome-launcher',
+      'karma-firefox-launcher'
+    ],
+
+    proxies: {
+      '/': 'http://localhost:9876/'
+    },
+
+    urlRoot: '/__karma__/',
+
+    files: [
+      // 3rd-party resources
+      'node_modules/angular-mocks/angular-mocks.js',
+
+      // app-specific code
+      'app/scripts/app.js',
+
+      // test files
+      'test/unit/**/*.js'
+    ]
+
+  });
+
+};
+"""
+
+test_protractor = """'use strict';
+
+exports.config = {
+
+  allScriptsTimeout: 11000,
+
+  baseUrl: 'http://localhost:3000/',
+
+  capabilities: {
+    browserName: 'chrome',
+    version: '',
+    platform: 'ANY'
+  },
+
+  framework: 'jasmine',
+
+  jasmineNodeOpts: {
+    isVerbose: false,
+    showColors: true,
+    includeStackTrace: true,
+    defaultTimeoutInterval: 30000
+  },
+
+  specs: [
+    'e2e/**/*.js'
+  ]
+
+};
+"""
+
 class Angular(object):
 
     @staticmethod
@@ -683,7 +890,7 @@ angular.element(document).ready(function() {
   // mount on window for testing
   window.%(appname)s = angular.module('%(appname)s', requires);
 
-  angular.module('%(appname)s').constant('AppSettings', require('./constants'));
+  angular.module('%(appname)s').constant('AppSettings', require('./config'));
 
   angular.module('%(appname)s').config(require('./routes'));
 
