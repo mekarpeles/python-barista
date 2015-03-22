@@ -4,8 +4,6 @@
 import json
 import datetime
 
-empty = ""
-
 def package(name, version, **kwargs):
     """For package.json"""
     return json.dumps({
@@ -26,9 +24,10 @@ def package(name, version, **kwargs):
             }
         })
 
-def header(name, desc="", year="", author="Anonymous", license="BSD", python='3.4'):
+def header(name, desc="", year="", author="Anonymous", license="", python='3.4'):
     """Header for .py files"""
     year = year or datetime.date.today().year
+    license = "%s," % license if license else ""
     return """#!/usr/bin/env python%s
 #-*-coding: utf-8 -*-
 
@@ -38,7 +37,7 @@ def header(name, desc="", year="", author="Anonymous", license="BSD", python='3.
     %s
 
     :copyright: (c) %s by %s
-    :license: %s, see LICENSE for more details.
+    :license: %s see LICENSE for more details.
 \"\"\"
 
 """ % (python, name, "~" * len(name), desc, year, author, license)
@@ -64,7 +63,12 @@ config.getdef = types.MethodType(getdef, config)
 HOST = config.getdef("server", "host", '0.0.0.0')
 PORT = int(config.getdef("server", "port", 8080))
 DEBUG = bool(int(config.getdef("server", "debug", 1)))
-options = {'debug': DEBUG, 'host': HOST, 'port': PORT}
+options = {
+    'debug': DEBUG,
+    'host': HOST,
+    'port': PORT,
+    'template_folder': 'static/app/views'
+}
 """
 
 settings = """[server]
@@ -136,3 +140,86 @@ def base(title, static):
     </body>
 </html>
 """ % (title, static, static)
+
+class Angular(object):
+
+    @staticmethod
+    def directives(appname):
+        return """
+'use strict';
+
+var angular = require('angular');
+
+module.exports = angular.module('%(appname)s.directives', []);
+
+// Define the list of directives here
+//require('./example.js');
+""" % {'appname': appname}
+
+    @staticmethod
+    def services(appname):
+        return """'use strict';
+
+var angular = require('angular');
+
+module.exports = angular.module('%(appname)s.services', []);
+
+// Define the list of services here
+require('./user.js');
+require('./inviteRequest.js');
+""" % {'appname': appname}
+
+    @staticmethod
+    def controllers(appname):
+        return """'use strict';    
+
+var angular = require('angular');
+
+module.exports = angular.module('%(appname)s.controllers', []);
+
+// Define the list of controllers here
+//require('./example.js');
+""" % {'appname': appname}
+
+    @staticmethod
+    def app(appname):
+        return """'use strict';
+
+var angular = require('angular');
+
+// angular modules
+require('angular-ui-router');
+require('./templates');
+require('./controllers/_index');
+require('./services/_index');
+require('./directives/_index');
+
+// create and bootstrap application
+angular.element(document).ready(function() {
+
+  var requires = [
+    'ui.router',
+    '%(appname)s.controllers',
+    '%(appname)s.services',
+    '%(appname)s.directives'
+  ];
+
+  // mount on window for testing
+  window.%(appname)s = angular.module('%(appname)s', requires);
+
+  angular.module('%(appname)s').constant('AppSettings', require('./constants'));
+
+  angular.module('%(appname)s').config(require('./routes'));
+
+  angular.module('%(appname)s').run(require('./on_run'));
+
+  angular.bootstrap(document, ['%(appname)s']);
+
+});
+""" % {'appname': appname}
+
+
+module.exports = [
+  ['home', '/', require('./home.js')]
+]
+"""

@@ -13,27 +13,46 @@
 import os
 from . import assets
 
-def setup(path, appname="app.py", version="0.0.1", python='3.4', **kwargs):
+def setup(path, appname="app", version="0.0.1", python='3.4', **kwargs):
     static = kwargs.pop('static', 'static')
     fs = {
-        'app.py': assets.app,
+        '%s.py' % appname: assets.app,
         static: {
             'package.json': assets.package(appname, version),
-            'Gulpfile.js': assets.empty,
-            'build': {
-                'css': {},
-                'imgs': {},
-                'js': {},
-                'fonts': {}
-                },
-            'styles': {'style.less': assets.empty},
-            'js': {'app.js': assets.empty},
-            'fonts': {},
-            'imgs': {}
-            },
-        kwargs.pop('templates', 'templates'): {
-            'base.html': assets.base(appname, static),
-            'partials': {}
+            'Gulpfile.js': "",
+            'gulp': {},
+            'test': {},
+            'app': {
+                kwargs.pop('templates', 'views'): {
+                    'base.html': assets.base(appname, static),
+                    'partials': {}
+                    },
+                'fonts': {},
+                'images': {},
+                'scripts': {
+                    'app.js': assets.Angular.app(appname),
+                    'controllers': {},
+                    'directives': {'_index.js': assets.Angular.directives(appname)},
+                    'services': {'_index.js': assets.Angular.services(appname)},
+                    'factories': {'_index.js': assets.Angular.factories(appname)},
+                    'config.js': {}
+                    'settings.json': {},
+
+
+                    'factories': {},
+
+                                   'base.js': assets.Angular.directive
+                                   },
+
+                    'controllers': {'index.js': assets.Angular.controllers,
+                                    'home.js': assets.Angular.controller
+                                    },
+                    'states': {'index.js': assets.Angular.states,
+                               'home.js': assets.Angular.state},
+                    },
+                'styles': {'style.scss': ""},
+                'fonts': {},
+                'imgs': {}
             },
         kwargs.pop('views', 'views'): {
             '__init__.py': assets.views
@@ -43,7 +62,7 @@ def setup(path, appname="app.py", version="0.0.1", python='3.4', **kwargs):
             'settings.cfg': assets.settings
             },
         kwargs.pop('tests', 'tests'): {
-            '__init__.py': assets.empty
+            '__init__.py': ""
             },
         }
     buildfs(fs, path=path, **kwargs)
