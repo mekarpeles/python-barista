@@ -19,7 +19,7 @@ def setup(path, appname="app", version="0.0.1", python='3.4', **kwargs):
         '%s.py' % appname: assets.app,
         static: {
             'package.json': assets.package(appname, version),
-            'Gulpfile.js': "",
+            'Gulpfile.js': " ",
             'gulp': {
                 'tasks': assets.gulp_tasks(appname),
                 'util': assets.gulp_util(appname),
@@ -27,10 +27,10 @@ def setup(path, appname="app", version="0.0.1", python='3.4', **kwargs):
                 'index.js': assets.gulp_index
             },
             'test': {
-                'e2e': assets.test_e2e,
+                'e2e': assets.test_e2e(),
                 'unit': {
-                    'controllers': assets.test_unit_controllers,
-                    'services': assets.test_unit_services,
+                    'controllers': assets.test_unit_controllers(),
+                    'services': assets.test_unit_services(),
                     'settings_spec.js': assets.test_unit_settings_spec
                 },
                 'karma.conf.js': assets.test_karma,
@@ -40,50 +40,38 @@ def setup(path, appname="app", version="0.0.1", python='3.4', **kwargs):
                 kwargs.pop('templates', 'views'): {
                     'base.html': assets.base(appname, static),
                     'partials': {}
-                    },
+                },
                 'fonts': {},
                 'images': {},
                 'scripts': {
                     'app.js': assets.Angular.app(appname),
-                    'controllers': {},
                     'directives': {'_index.js': assets.Angular.directives(appname)},
                     'services': {'_index.js': assets.Angular.services(appname)},
-                    'factories': {'_index.js': assets.Angular.factories(appname)},
-                    'config.js': {}
-                    'settings.json': {},
-
-
-                    'factories': {},
-
-                                   'base.js': assets.Angular.directive
-                                   },
-
-                    'controllers': {'index.js': assets.Angular.controllers,
-                                    'home.js': assets.Angular.controller
-                                    },
-                    'states': {'index.js': assets.Angular.states,
-                               'home.js': assets.Angular.state},
-                    },
-                'styles': {'style.scss': ""},
-                'fonts': {},
-                'imgs': {}
-            },
+                    'controllers': {'_index.js': assets.Angular.controllers(appname)},
+                    'config.js': " ",
+                    'settings.json': " ",
+                    'styles': {'style.scss': ""}
+                }
+            }
+        },
         kwargs.pop('views', 'views'): {
             '__init__.py': assets.views
-            },
+        },
         kwargs.pop('configs', 'configs'): {
             '__init__.py': assets.config,
             'settings.cfg': assets.settings
-            },
+        },
         kwargs.pop('tests', 'tests'): {
-            '__init__.py': ""
-            },
+            '__init__.py': " "
         }
+    }
     buildfs(fs, path=path, **kwargs)
+
 
 def buildfs(fs, path="", **kwargs):
     if type(fs) is not dict:
         return create_asset(fs, path, **kwargs)
+
     for f in fs:
         cwd = "%s%s%s" % (path, os.sep, f)
         if type(fs[f]) is dict:

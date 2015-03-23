@@ -27,7 +27,7 @@ def package(name, version, **kwargs):
 def header(name, desc="", year="", author="Anonymous", license="", python='3.4'):
     """Header for .py files"""
     year = year or datetime.date.today().year
-    license = "%s," % license if license else ""
+    license = " %s," % license if license else ""
     return """#!/usr/bin/env python%s
 #-*-coding: utf-8 -*-
 
@@ -37,7 +37,7 @@ def header(name, desc="", year="", author="Anonymous", license="", python='3.4')
     %s
 
     :copyright: (c) %s by %s
-    :license: %s see LICENSE for more details.
+    :license:%s see LICENSE for more details.
 \"\"\"
 
 """ % (python, name, "~" * len(name), desc, year, author, license)
@@ -45,7 +45,10 @@ def header(name, desc="", year="", author="Anonymous", license="", python='3.4')
 config = """import os
 import sys
 import types
-import configparser
+try:
+    import ConfigParser as configparser
+except:
+    import configparser
 
 path = os.path.dirname(os.path.realpath(__file__))
 approot = os.path.abspath(os.path.join(path, os.pardir))
@@ -63,11 +66,11 @@ config.getdef = types.MethodType(getdef, config)
 HOST = config.getdef("server", "host", '0.0.0.0')
 PORT = int(config.getdef("server", "port", 8080))
 DEBUG = bool(int(config.getdef("server", "debug", 1)))
+template_folder = 'static/app/views'
 options = {
     'debug': DEBUG,
     'host': HOST,
     'port': PORT,
-    'template_folder': 'static/app/views'
 }
 """
 
@@ -81,13 +84,13 @@ debug = 1
 app = """from flask import Flask
 from flask.ext.routing import router
 import views
-from configs import options
+from configs import options, template_folder
 
 urls = ('/partials/<path:partial>', views.Partial,
         '/<path:uri>', views.Base,
         '/', views.Base
         )
-app = router(Flask(__name__), urls)
+app = router(Flask(__name__, template_folder=template_folder), urls)
 
 if __name__ == "__main__":
     app.run(**options)
@@ -617,7 +620,7 @@ module.exports = function(name) {
 """
 }
 
-def test_e2e:
+def test_e2e():
     return {
         'example_spec.js': """/*global browser, by */
 
@@ -656,7 +659,7 @@ def test_e2e:
 """
 }
 
-def test_unit_controllers:
+def test_unit_controllers():
     return {
         'example_spec.js': """/*global angular */
 
@@ -692,7 +695,7 @@ def test_unit_controllers:
 """
 }
 
-def test_unit_services:
+def test_unit_services():
     return {
         'example_spec.js': """/*global angular */
 
@@ -902,7 +905,3 @@ angular.element(document).ready(function() {
 """ % {'appname': appname}
 
 
-module.exports = [
-  ['home', '/', require('./home.js')]
-]
-"""

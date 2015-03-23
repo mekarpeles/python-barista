@@ -10,7 +10,7 @@ def argparser():
     parser = argparse.ArgumentParser(description="Barista helps you with your Flask.")
     parser.add_argument('init', nargs='?', metavar='init',
                         help="Create a new Flask web application")
-    parser.add_argument('--name', dest='name', default="app.py",
+    parser.add_argument('--name', dest='name', default="app",
                         help='Specify a name')
     return parser
 
