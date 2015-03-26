@@ -830,6 +830,18 @@ exports.config = {
 class Angular(object):
 
     @staticmethod
+    def config(appname):
+        return """'use strict';
+
+var AppSettings = {
+  appTitle: '%(appname)s',
+  apiPath: '/api/v1'
+};
+
+module.exports = AppSettings;
+"""
+
+    @staticmethod
     def directives(appname):
         return """
 'use strict';
