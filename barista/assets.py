@@ -962,8 +962,7 @@ var angular = require('angular');
 module.exports = angular.module('%(appname)s.services', []);
 
 // Define the list of services here
-require('./user.js');
-require('./inviteRequest.js');
+// require('./user.js');
 """ % {'appname': appname}
 
     @staticmethod
