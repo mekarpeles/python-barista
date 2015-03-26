@@ -10,7 +10,7 @@ def package(name, version, **kwargs):
         "name": name,
         "version": kwargs.get('version', ''),
         "description": kwargs.get('desc', ''),
-        "main": "js/app.js",
+        "main": "build/js/" + name + ".js",
         "scripts": {
             "test": "test"
         },
