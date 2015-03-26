@@ -19,6 +19,7 @@ def setup(path, appname="app", version="0.0.1", python='3.4', **kwargs):
         '%s.py' % appname: assets.app,
         static: {
             'package.json': assets.package(appname, version),
+            'bower.json': assets.bower_json(appname, version),
             'Gulpfile.js': " ",
             'gulp': {
                 'tasks': assets.gulp_tasks(appname),

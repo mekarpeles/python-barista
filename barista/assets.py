@@ -24,6 +24,31 @@ def package(name, version, **kwargs):
             }
         })
 
+def bower_json(name, version, **kwargs):
+    """For bower.json"""
+    return json.dumps({
+        "name": name,
+        "version": kwargs.get('version', ''),
+        "homepage": kwargs.get('repo', ''),
+        "authors": [
+            kwargs.get('author', '')
+        ],
+        "description": kwargs.get('desc', ''),
+        "main": "build/css/" + name + ".css",
+        "keywords": [],
+        "license": kwargs.get('license', ''),
+        "ignore": [
+            "**/.*",
+            "node_modules",
+            "bower_components",
+            "test",
+            "tests"
+        ],
+        "dependencies": {
+            "fever": "*"
+        }
+    })
+
 def header(name, desc="", year="", author="Anonymous", license="", python='3.4'):
     """Header for .py files"""
     year = year or datetime.date.today().year
@@ -969,11 +994,15 @@ module.exports = OnRun;
 
 class Styles(object):
 
-    main = """/* Imports */
-@import 'base';
-@import 'landing';
+    main = """/* Master Stylesheet */
 
-/* Styles */
+// Libraries
+@import '../../bower_components/fever/scss/fever';
+
+// Components
+@import 
+  'base',
+  'landing';
 """
     base = """/* Base Styles */
 """
