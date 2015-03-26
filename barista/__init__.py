@@ -52,6 +52,11 @@ def setup(path, appname="app", version="0.0.1", python='3.4', **kwargs):
                     'routes.js': assets.Angular.routes(appname),
                     'on_run.js': assets.Angular.on_run(appname),
                     'settings.json': " "
+                },
+                'styles': {
+                    appname + '.scss': assets.Styles.main,
+                    '_base.scss': assets.Styles.base,
+                    '_landing.scss': assets.Styles.landing
                 }
             }
         },

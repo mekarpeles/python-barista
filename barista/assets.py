@@ -965,3 +965,18 @@ function OnRun($rootScope, AppSettings) {
 
 module.exports = OnRun;
 """ % {'appname': appname}
+
+
+class Styles(object):
+
+    main = """/* Imports */
+@import 'base';
+@import 'landing';
+
+/* Styles */
+"""
+    base = """/* Base Styles */
+"""
+
+    landing = """/* Landing Styles */
+"""
