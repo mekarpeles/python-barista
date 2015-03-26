@@ -49,8 +49,8 @@ def setup(path, appname="app", version="0.0.1", python='3.4', **kwargs):
                     'services': {'_index.js': assets.Angular.services(appname)},
                     'controllers': {'_index.js': assets.Angular.controllers(appname)},
                     'config.js': assets.Angular.config(appname),
-                    'settings.json': " ",
-                    'styles': {'style.scss': ""}
+                    'routes.js': assets.Angular.routes(appname),
+                    'settings.json': " "
                 }
             }
         },

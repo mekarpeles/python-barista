@@ -840,7 +840,7 @@ var AppSettings = {
 
 module.exports = AppSettings;
 """
-
+    
     @staticmethod
     def directives(appname):
         return """
@@ -916,4 +916,27 @@ angular.element(document).ready(function() {
 });
 """ % {'appname': appname}
 
+    @staticmethod
+    def routes(appname):
+        return """'use strict';
 
+/**
+ * @ngInject
+ */
+function Routes($stateProvider, $locationProvider, $urlRouterProvider) {
+
+  $locationProvider.html5Mode(true);
+
+  $stateProvider
+    .state('Landing', {
+      url: '/',
+      controller: 'LandingCtrl as landing',
+      templateUrl: 'partials/landing'
+    });
+
+  $urlRouterProvider.otherwise('/');
+
+}
+
+module.exports = Routes;
+""" % {'appname': appname}
