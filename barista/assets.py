@@ -938,7 +938,7 @@ var AppSettings = {
 };
 
 module.exports = AppSettings;
-"""
+""" % {'appname': appname}
     
     @staticmethod
     def directives(appname):
@@ -975,7 +975,7 @@ var angular = require('angular');
 module.exports = angular.module('%(appname)s.controllers', []);
 
 // Define the list of controllers here
-//require('./example.js');
+require('./landing.js');
 """ % {'appname': appname},
             'landing.js': """'use strict';
 
