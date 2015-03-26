@@ -1050,7 +1050,14 @@ function OnRun($rootScope, AppSettings) {
 module.exports = OnRun;
 """ % {'appname': appname}
 
-
+def partials(appname):
+    return {
+        'landing.html': """<div id="landing">
+    <h3>%(appname)s has landed!</h3>
+</div>
+""" % {'appname': appname}
+    }
+    
 class Styles(object):
 
     main = """/* Master Stylesheet */

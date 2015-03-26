@@ -40,7 +40,7 @@ def setup(path, appname="app", version="0.0.1", python='3.4', **kwargs):
             'app': {
                 kwargs.pop('templates', 'views'): {
                     'base.html': assets.base(appname, static),
-                    'partials': {}
+                    'partials': assets.partials(appname)
                 },
                 'fonts': {},
                 'images': {},
