@@ -952,7 +952,8 @@ require('./inviteRequest.js');
 
     @staticmethod
     def controllers(appname):
-        return """'use strict';    
+        return {
+            '_index.js': """'use strict';    
 
 var angular = require('angular');
 
@@ -960,7 +961,27 @@ module.exports = angular.module('%(appname)s.controllers', []);
 
 // Define the list of controllers here
 //require('./example.js');
+""" % {'appname': appname},
+            'landing.js': """'use strict';
+
+var %(appname)sControllers = require('./_index');
+
+/**
+ * @ngInject
+ */
+
+function LandingCtrl($stateParams, $timeout) {
+
+  // ViewModel
+  var landing = this;
+
+  landing.title = "home";
+
+}
+
+%(appname)sControllers.controller('LandingCtrl', LandingCtrl);
 """ % {'appname': appname}
+        }
 
     @staticmethod
     def app(appname):
