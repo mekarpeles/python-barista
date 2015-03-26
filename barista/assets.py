@@ -940,3 +940,28 @@ function Routes($stateProvider, $locationProvider, $urlRouterProvider) {
 
 module.exports = Routes;
 """ % {'appname': appname}
+
+    @staticmethod
+    def on_run(appname):
+        return """'use strict';
+
+/**
+ * @ngInject
+ */
+function OnRun($rootScope, AppSettings) {
+
+  // change page title based on state
+  $rootScope.$on('$stateChangeSuccess', function(event, toState) {
+    $rootScope.pageTitle = '';
+
+    if ( toState.title ) {
+      $rootScope.pageTitle += toState.title;
+    }
+
+    $rootScope.pageTitle += AppSettings.appTitle;
+  });
+
+}
+
+module.exports = OnRun;
+""" % {'appname': appname}
