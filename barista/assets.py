@@ -308,8 +308,7 @@ var gulp        = require('gulp');
 
 });    
 """,
-    'browserify.js': """
-'use strict';
+    'browserify.js': """'use strict';
 
 var config       = require('../config');
 var gulp         = require('gulp');
@@ -362,7 +361,7 @@ function buildScript(file) {
 
     gulp.task('browserify', function() {
 
-    return buildScript('%(appname)s');
+    return buildScript('%(appname)s.js');
 
 });
 """%{'appname': appname},
@@ -393,7 +392,7 @@ var gulp = require('gulp');
 var gulp        = require('gulp');
 var runSequence = require('run-sequence');
 
-    gulp.task('dev', ['clean'], function(cb) {
+gulp.task('dev', ['clean'], function(cb) {
 
   cb = cb || function() {};
 
@@ -410,7 +409,7 @@ var changed    = require('gulp-changed');
 var gulp       = require('gulp');
 var gulpif     = require('gulp-if');
 
-    gulp.task('fonts', function() {
+gulp.task('fonts', function() {
 
   var dest = config.fonts.dest;
 
@@ -428,7 +427,7 @@ var gulp       = require('gulp');
 var gulpif     = require('gulp-if');
 var imagemin   = require('gulp-imagemin');
 
-    gulp.task('images', function() {
+gulp.task('images', function() {
 
   var dest = config.images.dest;
 
@@ -445,7 +444,7 @@ var config = require('../config');
 var gulp   = require('gulp');
 var jshint = require('gulp-jshint');
 
-    gulp.task('lint', function() {
+gulp.task('lint', function() {
     return gulp.src([config.scripts.src, '!app/js/templates.js'])
     .pipe(jshint())
     .pipe(jshint.reporter('jshint-stylish'));
@@ -456,7 +455,7 @@ var jshint = require('gulp-jshint');
 var gulp        = require('gulp');
 var runSequence = require('run-sequence');
 
-    gulp.task('prod', ['clean'], function(cb) {
+gulp.task('prod', ['clean'], function(cb) {
 
   cb = cb || function() {};
 
@@ -474,10 +473,10 @@ var webdriver       = require('gulp-protractor').webdriver;
 var webdriverUpdate = require('gulp-protractor').webdriver_update;
 var config          = require('../config');
 
-    gulp.task('webdriver-update', webdriverUpdate);
-    gulp.task('webdriver', webdriver);
+gulp.task('webdriver-update', webdriverUpdate);
+gulp.task('webdriver', webdriver);
 
-    gulp.task('protractor', ['webdriver-update', 'webdriver', 'server'], function() {
+gulp.task('protractor', ['webdriver-update', 'webdriver', 'server'], function() {
 
   return gulp.src('test/e2e/**/*.js')
     .pipe(protractor({
@@ -495,7 +494,7 @@ var config          = require('../config');
 var gulp        = require('gulp');
 var browserSync = require('browser-sync');
 
-    gulp.task('reload', function() {
+gulp.task('reload', function() {
 
   browserSync.reload();
 
@@ -510,7 +509,7 @@ var gulp    = require('gulp');
 var gutil   = require('gulp-util');
 var morgan  = require('morgan');
 
-    gulp.task('server', function() {
+gulp.task('server', function() {
 
   var server = express();
 
@@ -548,7 +547,7 @@ var handleErrors = require('../util/handleErrors');
 var browserSync  = require('browser-sync');
 var autoprefixer = require('gulp-autoprefixer');
 
-    gulp.task('styles', function () {
+gulp.task('styles', function () {
 
   return gulp.src(config.styles.src)
     .pipe(sass({
@@ -568,7 +567,7 @@ var autoprefixer = require('gulp-autoprefixer');
 var gulp        = require('gulp');
 var runSequence = require('run-sequence');
 
-    gulp.task('test', ['server'], function() {
+gulp.task('test', ['server'], function() {
 
     runSequence('unit', 'protractor');
 
@@ -580,7 +579,7 @@ var gulp   = require('gulp');
 var karma  = require('gulp-karma');
 var config = require('../config');
 
-    gulp.task('unit', function() {
+gulp.task('unit', function() {
 
     // Nonsensical source to fall back to files listed in karma.conf.js,
   // see https://github.com/lazd/gulp-karma/issues/9
@@ -603,10 +602,10 @@ var gulp           = require('gulp');
 var templateCache  = require('gulp-angular-templatecache');
 
 // Views task
-    gulp.task('views', function() {
+gulp.task('views', function() {
 
   // Put our index.html in the dist folder
-  gulp.src('app/index.html')
+  gulp.src('app/views/base.html')
     .pipe(gulp.dest(config.dist.root));
 
   // Process any other view files from app/views
@@ -623,12 +622,27 @@ var templateCache  = require('gulp-angular-templatecache');
 var config        = require('../config');
 var gulp          = require('gulp');
 
-    gulp.task('watch', ['browserSync', 'server'], function() {
+gulp.task('watch', ['browserSync', 'server'], function() {
 
     gulp.watch(config.scripts.src, ['lint', 'browserify']);
     gulp.watch(config.styles.src,  ['styles']);
     gulp.watch(config.images.src,  ['images', 'reload']);
     gulp.watch(config.views.watch, ['views']);
+
+});
+""",
+    'build.js': """'use strict';
+
+var gulp        = require('gulp');
+var runSequence = require('run-sequence');
+
+gulp.task('build', ['clean'], function(cb) {
+
+  cb = cb || function() {};
+
+  global.isProd = false;
+
+  runSequence('styles', 'images', 'fonts', 'views', 'browserify', cb);
 
 });
 """
