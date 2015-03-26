@@ -24,7 +24,7 @@ def setup(path, appname="app", version="0.0.1", python='3.4', **kwargs):
             'gulp': {
                 'tasks': assets.gulp_tasks(appname),
                 'util': assets.gulp_util(appname),
-                'config.js': assets.gulp_config,
+                'config.js': assets.gulp_config(appname),
                 'index.js': assets.gulp_index
             },
             'test': {

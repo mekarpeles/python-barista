@@ -227,7 +227,8 @@ global.isProd = false;
 require('./gulp');
 """
 
-gulp_config = """'use strict';
+def gulp_config(appname):
+    return """'use strict';
 
 module.exports = {
 
@@ -268,8 +269,8 @@ module.exports = {
   },
 
   'browserify': {
-    'entries'   : ['./app/scripts/app.js'],
-    'bundleName': 'app.js'
+    'entries'   : ['./app/scripts/%(appname)s.js'],
+    'bundleName': '%(appname)s.js'
   },
 
   'test': {
@@ -278,7 +279,7 @@ module.exports = {
   }
 
 };
-"""
+""" % {'appname': appname}
 
 gulp_index = """'use strict';
 
