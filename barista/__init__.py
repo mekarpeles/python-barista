@@ -34,7 +34,7 @@ def setup(path, appname="app", version="0.0.1", python='3.4', **kwargs):
                     'services': assets.test_unit_services(),
                     'settings_spec.js': assets.test_unit_settings_spec
                 },
-                'karma.conf.js': assets.test_karma,
+                'karma.conf.js': assets.test_karma(appname),
                 'protractor.conf.js': assets.test_protractor
             },
             'app': {

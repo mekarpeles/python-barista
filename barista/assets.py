@@ -836,7 +836,8 @@ describe('Unit: Settings', function() {
 });
 """
 
-test_karma = """'use strict';
+def test_karma(appname):
+    return """'use strict';
 
 module.exports = function(config) {
 
@@ -870,7 +871,7 @@ module.exports = function(config) {
       'node_modules/angular-mocks/angular-mocks.js',
 
       // app-specific code
-      'app/scripts/app.js',
+      'app/scripts/%(appname)s.js',
 
       // test files
       'test/unit/**/*.js'
@@ -879,7 +880,7 @@ module.exports = function(config) {
   });
 
 };
-"""
+""" % {'appname': appname}
 
 test_protractor = """'use strict';
 
