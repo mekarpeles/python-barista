@@ -10,19 +10,85 @@ def package(name, version, **kwargs):
         "name": name,
         "version": kwargs.get('version', ''),
         "description": kwargs.get('desc', ''),
-        "main": "js/app.js",
+        "main": "build/js/" + name + ".js",
         "scripts": {
             "test": "test"
-            },
+        },
         "repository": {
             "type": "git",
             "url": kwargs.get('repo', '')
-            },
+        },
         "author": kwargs.get('author', ''),
         "license": kwargs.get('license', ''),
-        "devDependencies": {
-            }
-        })
+        "dependencies": {
+            "angular": "^1.3.15",
+            "angular-ui-router": "^0.2.13",
+            "angular-mocks": "^1.3.15",
+            "brfs": "^1.4.0",
+            "browser-sync": "^1.9.1",
+            "browserify-ngannotate": "^0.1.0",
+            "express": "^4.12.3",
+            "gulp": "^3.8.11",
+            "gulp-angular-templatecache": "^1.5.0",
+            "del": "^0.1.3",
+            "browserify": "^5.13.1",
+            "gulp-changed": "^1.2.1",
+            "browserify-shim": "^3.8.3",
+            "gulp-imagemin": "^1.2.1",
+            "gulp-if": "^1.2.5",
+            "gulp-karma": "^0.0.4",
+            "gulp-notify": "^2.2.0",
+            "gulp-protractor": "^0.0.11",
+            "gulp-rename": "^1.2.0",
+            "gulp-jshint": "^1.9.4",
+            "gulp-streamify": "^0.0.5",
+            "gulp-autoprefixer": "^2.1.0",
+            "gulp-util": "^3.0.4",
+            "gulp-uglify": "^1.1.0",
+            "gulp-sass": "^0.7.3",
+            "karma": "^0.12.31",
+            "karma-chrome-launcher": "^0.1.7",
+            "jshint-stylish": "^1.0.1",
+            "karma-firefox-launcher": "^0.1.4",
+            "karma-jasmine": "^0.1.5",
+            "morgan": "^1.5.2",
+            "pretty-hrtime": "^0.2.2",
+            "protractor": "^1.8.0",
+            "run-sequence": "^0.3.7",
+            "tiny-lr": "^0.0.9",
+            "uglifyify": "^2.6.0",
+            "vinyl-source-stream": "^0.1.1",
+            "watchify": "^2.5.0",
+            "imagemin-pngcrush": "^0.1.0",
+            "karma-bro": "^0.7.1"
+        },
+        "devDependencies": {}
+    })
+
+def bower_json(name, version, **kwargs):
+    """For bower.json"""
+    return json.dumps({
+        "name": name,
+        "version": kwargs.get('version', ''),
+        "homepage": kwargs.get('repo', ''),
+        "authors": [
+            kwargs.get('author', '')
+        ],
+        "description": kwargs.get('desc', ''),
+        "main": "build/css/" + name + ".css",
+        "keywords": [],
+        "license": kwargs.get('license', ''),
+        "ignore": [
+            "**/.*",
+            "node_modules",
+            "bower_components",
+            "test",
+            "tests"
+        ],
+        "dependencies": {
+            "fever": "*"
+        }
+    })
 
 def header(name, desc="", year="", author="Anonymous", license="", python='3.4'):
     """Header for .py files"""
@@ -110,41 +176,59 @@ class Partial(MethodView):
 
 """
 
-def base(title, static):
-    return """
-<!doctype html>
+def base(appname, static):
+    return """<!doctype html>
 <html class="no-js" lang="">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>%s</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script type="text/javascript" src="/%s/build/js/app.js"></script>
-        <link rel="stylesheet" type="text/css" href="/%s/build/css/style.css"/>
-    </head>
-    <body>
-        <!--[if lt IE 8]>
-            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+  <head>
+    <base href="/">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title ng-bind="pageTitle"></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="/static/build/js/%(appname)s.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/build/css/%(appname)s.css"/>
+  </head>
+  <body>
+    <!--[if lt IE 8]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        <!-- Add your site or application content here -->
-	<h1>It works!</h1>
+    <div ui:view></div>
 
-        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
-        <script>
-            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-            e.src='//www.google-analytics.com/analytics.js';
-            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-            ga('create','UA-XXXXX-X','auto');ga('send','pageview');
-        </script>
-    </body>
+    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+    <script>
+      (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+      function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+      e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+      e.src='//www.google-analytics.com/analytics.js';
+      r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+      ga('create','UA-XXXXX-X','auto');ga('send','pageview');
+    </script>
+  </body>
 </html>
-""" % (title, static, static)
+""" %{'appname': appname}
 
-gulp_config = """'use strict';
+gulpfile = """'use strict';
+
+/*
+ * Gulpfile.js
+ * ===========
+ * Rather than manage one giant configuration file responsible
+ * for creating multiple tasks, each task has been broken out into
+ * its own file in gulp/tasks. Any file in that folder gets automatically
+ * required by the loop in ./gulp/index.js (required below).
+ *
+ * To add a new task, simply add a new task file to gulp/tasks.
+ */
+
+global.isProd = false;
+
+require('./gulp');
+"""
+
+def gulp_config(appname):
+    return """'use strict';
 
 module.exports = {
 
@@ -185,8 +269,8 @@ module.exports = {
   },
 
   'browserify': {
-    'entries'   : ['./app/scripts/app.js'],
-    'bundleName': 'app.js'
+    'entries'   : ['./app/scripts/%(appname)s.js'],
+    'bundleName': '%(appname)s.js'
   },
 
   'test': {
@@ -195,7 +279,7 @@ module.exports = {
   }
 
 };
-"""
+""" % {'appname': appname}
 
 gulp_index = """'use strict';
 
@@ -224,8 +308,7 @@ var gulp        = require('gulp');
 
 });    
 """,
-    'browserify.js': """
-'use strict';
+    'browserify.js': """'use strict';
 
 var config       = require('../config');
 var gulp         = require('gulp');
@@ -278,7 +361,7 @@ function buildScript(file) {
 
     gulp.task('browserify', function() {
 
-    return buildScript('%(appname)s');
+    return buildScript('%(appname)s.js');
 
 });
 """%{'appname': appname},
@@ -309,7 +392,7 @@ var gulp = require('gulp');
 var gulp        = require('gulp');
 var runSequence = require('run-sequence');
 
-    gulp.task('dev', ['clean'], function(cb) {
+gulp.task('dev', ['clean'], function(cb) {
 
   cb = cb || function() {};
 
@@ -326,7 +409,7 @@ var changed    = require('gulp-changed');
 var gulp       = require('gulp');
 var gulpif     = require('gulp-if');
 
-    gulp.task('fonts', function() {
+gulp.task('fonts', function() {
 
   var dest = config.fonts.dest;
 
@@ -344,7 +427,7 @@ var gulp       = require('gulp');
 var gulpif     = require('gulp-if');
 var imagemin   = require('gulp-imagemin');
 
-    gulp.task('images', function() {
+gulp.task('images', function() {
 
   var dest = config.images.dest;
 
@@ -361,7 +444,7 @@ var config = require('../config');
 var gulp   = require('gulp');
 var jshint = require('gulp-jshint');
 
-    gulp.task('lint', function() {
+gulp.task('lint', function() {
     return gulp.src([config.scripts.src, '!app/js/templates.js'])
     .pipe(jshint())
     .pipe(jshint.reporter('jshint-stylish'));
@@ -372,7 +455,7 @@ var jshint = require('gulp-jshint');
 var gulp        = require('gulp');
 var runSequence = require('run-sequence');
 
-    gulp.task('prod', ['clean'], function(cb) {
+gulp.task('prod', ['clean'], function(cb) {
 
   cb = cb || function() {};
 
@@ -390,10 +473,10 @@ var webdriver       = require('gulp-protractor').webdriver;
 var webdriverUpdate = require('gulp-protractor').webdriver_update;
 var config          = require('../config');
 
-    gulp.task('webdriver-update', webdriverUpdate);
-    gulp.task('webdriver', webdriver);
+gulp.task('webdriver-update', webdriverUpdate);
+gulp.task('webdriver', webdriver);
 
-    gulp.task('protractor', ['webdriver-update', 'webdriver', 'server'], function() {
+gulp.task('protractor', ['webdriver-update', 'webdriver', 'server'], function() {
 
   return gulp.src('test/e2e/**/*.js')
     .pipe(protractor({
@@ -411,7 +494,7 @@ var config          = require('../config');
 var gulp        = require('gulp');
 var browserSync = require('browser-sync');
 
-    gulp.task('reload', function() {
+gulp.task('reload', function() {
 
   browserSync.reload();
 
@@ -426,7 +509,7 @@ var gulp    = require('gulp');
 var gutil   = require('gulp-util');
 var morgan  = require('morgan');
 
-    gulp.task('server', function() {
+gulp.task('server', function() {
 
   var server = express();
 
@@ -464,7 +547,7 @@ var handleErrors = require('../util/handleErrors');
 var browserSync  = require('browser-sync');
 var autoprefixer = require('gulp-autoprefixer');
 
-    gulp.task('styles', function () {
+gulp.task('styles', function () {
 
   return gulp.src(config.styles.src)
     .pipe(sass({
@@ -484,7 +567,7 @@ var autoprefixer = require('gulp-autoprefixer');
 var gulp        = require('gulp');
 var runSequence = require('run-sequence');
 
-    gulp.task('test', ['server'], function() {
+gulp.task('test', ['server'], function() {
 
     runSequence('unit', 'protractor');
 
@@ -496,7 +579,7 @@ var gulp   = require('gulp');
 var karma  = require('gulp-karma');
 var config = require('../config');
 
-    gulp.task('unit', function() {
+gulp.task('unit', function() {
 
     // Nonsensical source to fall back to files listed in karma.conf.js,
   // see https://github.com/lazd/gulp-karma/issues/9
@@ -519,10 +602,10 @@ var gulp           = require('gulp');
 var templateCache  = require('gulp-angular-templatecache');
 
 // Views task
-    gulp.task('views', function() {
+gulp.task('views', function() {
 
   // Put our index.html in the dist folder
-  gulp.src('app/index.html')
+  gulp.src('app/views/base.html')
     .pipe(gulp.dest(config.dist.root));
 
   // Process any other view files from app/views
@@ -539,12 +622,27 @@ var templateCache  = require('gulp-angular-templatecache');
 var config        = require('../config');
 var gulp          = require('gulp');
 
-    gulp.task('watch', ['browserSync', 'server'], function() {
+gulp.task('watch', ['browserSync', 'server'], function() {
 
     gulp.watch(config.scripts.src, ['lint', 'browserify']);
     gulp.watch(config.styles.src,  ['styles']);
     gulp.watch(config.images.src,  ['images', 'reload']);
     gulp.watch(config.views.watch, ['views']);
+
+});
+""",
+    'build.js': """'use strict';
+
+var gulp        = require('gulp');
+var runSequence = require('run-sequence');
+
+gulp.task('build', ['clean'], function(cb) {
+
+  cb = cb || function() {};
+
+  global.isProd = false;
+
+  runSequence('styles', 'images', 'fonts', 'views', 'browserify', cb);
 
 });
 """
@@ -752,7 +850,8 @@ describe('Unit: Settings', function() {
 });
 """
 
-test_karma = """'use strict';
+def test_karma(appname):
+    return """'use strict';
 
 module.exports = function(config) {
 
@@ -786,7 +885,7 @@ module.exports = function(config) {
       'node_modules/angular-mocks/angular-mocks.js',
 
       // app-specific code
-      'app/scripts/app.js',
+      'app/scripts/%(appname)s.js',
 
       // test files
       'test/unit/**/*.js'
@@ -795,7 +894,7 @@ module.exports = function(config) {
   });
 
 };
-"""
+""" % {'appname': appname}
 
 test_protractor = """'use strict';
 
@@ -830,6 +929,18 @@ exports.config = {
 class Angular(object):
 
     @staticmethod
+    def config(appname):
+        return """'use strict';
+
+var AppSettings = {
+  appTitle: '%(appname)s',
+  apiPath: '/api/v1'
+};
+
+module.exports = AppSettings;
+""" % {'appname': appname}
+    
+    @staticmethod
     def directives(appname):
         return """
 'use strict';
@@ -851,21 +962,41 @@ var angular = require('angular');
 module.exports = angular.module('%(appname)s.services', []);
 
 // Define the list of services here
-require('./user.js');
-require('./inviteRequest.js');
+// require('./user.js');
 """ % {'appname': appname}
 
     @staticmethod
     def controllers(appname):
-        return """'use strict';    
+        return {
+            '_index.js': """'use strict';    
 
 var angular = require('angular');
 
 module.exports = angular.module('%(appname)s.controllers', []);
 
 // Define the list of controllers here
-//require('./example.js');
+require('./landing.js');
+""" % {'appname': appname},
+            'landing.js': """'use strict';
+
+var %(appname)sControllers = require('./_index');
+
+/**
+ * @ngInject
+ */
+
+function LandingCtrl($stateParams, $timeout) {
+
+  // ViewModel
+  var landing = this;
+
+  landing.title = "home";
+
+}
+
+%(appname)sControllers.controller('LandingCtrl', LandingCtrl);
 """ % {'appname': appname}
+        }
 
     @staticmethod
     def app(appname):
@@ -904,4 +1035,78 @@ angular.element(document).ready(function() {
 });
 """ % {'appname': appname}
 
+    @staticmethod
+    def routes(appname):
+        return """'use strict';
 
+/**
+ * @ngInject
+ */
+function Routes($stateProvider, $locationProvider, $urlRouterProvider) {
+
+  $locationProvider.html5Mode(true);
+
+  $stateProvider
+    .state('Landing', {
+      url: '/',
+      controller: 'LandingCtrl as landing',
+      templateUrl: 'partials/landing'
+    });
+
+  $urlRouterProvider.otherwise('/');
+
+}
+
+module.exports = Routes;
+""" % {'appname': appname}
+
+    @staticmethod
+    def on_run(appname):
+        return """'use strict';
+
+/**
+ * @ngInject
+ */
+function OnRun($rootScope, AppSettings) {
+
+  // change page title based on state
+  $rootScope.$on('$stateChangeSuccess', function(event, toState) {
+    $rootScope.pageTitle = '';
+
+    if ( toState.title ) {
+      $rootScope.pageTitle += toState.title;
+    }
+
+    $rootScope.pageTitle += AppSettings.appTitle;
+  });
+
+}
+
+module.exports = OnRun;
+""" % {'appname': appname}
+
+def partials(appname):
+    return {
+        'landing.html': """<div id="landing">
+    <h3>%(appname)s has landed!</h3>
+</div>
+""" % {'appname': appname}
+    }
+    
+class Styles(object):
+
+    main = """/* Master Stylesheet */
+
+// Libraries
+@import '../../bower_components/fever/scss/fever';
+
+// Components
+@import 
+  'base',
+  'landing';
+"""
+    base = """/* Base Styles */
+"""
+
+    landing = """/* Landing Styles */
+"""

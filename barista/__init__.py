@@ -19,11 +19,12 @@ def setup(path, appname="app", version="0.0.1", python='3.4', **kwargs):
         '%s.py' % appname: assets.app,
         static: {
             'package.json': assets.package(appname, version),
-            'Gulpfile.js': " ",
+            'bower.json': assets.bower_json(appname, version),
+            'Gulpfile.js': assets.gulpfile,
             'gulp': {
                 'tasks': assets.gulp_tasks(appname),
                 'util': assets.gulp_util(appname),
-                'config.js': assets.gulp_config,
+                'config.js': assets.gulp_config(appname),
                 'index.js': assets.gulp_index
             },
             'test': {
@@ -33,24 +34,30 @@ def setup(path, appname="app", version="0.0.1", python='3.4', **kwargs):
                     'services': assets.test_unit_services(),
                     'settings_spec.js': assets.test_unit_settings_spec
                 },
-                'karma.conf.js': assets.test_karma,
+                'karma.conf.js': assets.test_karma(appname),
                 'protractor.conf.js': assets.test_protractor
             },
             'app': {
                 kwargs.pop('templates', 'views'): {
                     'base.html': assets.base(appname, static),
-                    'partials': {}
+                    'partials': assets.partials(appname)
                 },
                 'fonts': {},
                 'images': {},
                 'scripts': {
-                    'app.js': assets.Angular.app(appname),
+                    appname + '.js': assets.Angular.app(appname),
                     'directives': {'_index.js': assets.Angular.directives(appname)},
                     'services': {'_index.js': assets.Angular.services(appname)},
-                    'controllers': {'_index.js': assets.Angular.controllers(appname)},
-                    'config.js': " ",
-                    'settings.json': " ",
-                    'styles': {'style.scss': ""}
+                    'controllers': assets.Angular.controllers(appname),
+                    'config.js': assets.Angular.config(appname),
+                    'routes.js': assets.Angular.routes(appname),
+                    'on_run.js': assets.Angular.on_run(appname),
+                    'settings.json': " "
+                },
+                'styles': {
+                    appname + '.scss': assets.Styles.main,
+                    '_base.scss': assets.Styles.base,
+                    '_landing.scss': assets.Styles.landing
                 }
             }
         },
